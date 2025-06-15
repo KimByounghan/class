@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ poem.title }} - {{ poem.author }}</title>
+</head>
+<body>
+    <h1>{{ poem.title }}</h1>
+    <h3>작가: {{ poem.author }}</h3>
+    <p>{{ poem.content|linebreaks }}</p>
+
+    <button id="generate-btn">감상문 자동 생성</button>
+    <div id="generated-appreciation" style="margin-top: 20px; white-space: pre-wrap;"></div>
+
+<h2>감상문 목록</h2>
+
+{% if appreciations %}
+    <ul>
+    {% for appreciation in appreciations %}
+        <li>{{ appreciation.content }}<br><small>{{ appreciation.created_at|date:"Y-m-d H:i" }}</small></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>아직 등록된 감상문이 없습니다.</p>
+{% endif %}
+
+    <script>
+    document.getElementById('generate-btn').addEventListener('click', function() {
+        const poemId = "{{ poem.id }}";
+        fetch(`/poem/${poemId}/generate_appreciation/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.appreciation) {
+                document.getElementById('generated-appreciation').innerText = data.appreciation;
+            } else {
+                document.getElementById('generated-appreciation').innerText = '감상문 생성에 실패했습니다.';
+            }
+        });
+    });
+    </script>
+</body>
+</html>
